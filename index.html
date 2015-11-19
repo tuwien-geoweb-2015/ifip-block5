@@ -13,10 +13,24 @@
 </form>
 <div id="map" class="map"></div>
 <script>
+
+var marker = new ol.Feature();
+
 var map = new ol.Map({
   layers: [
     new ol.layer.Tile({
       source: new ol.source.OSM()
+    }),
+    new ol.layer.Vector({
+      source: new ol.source.Vector({
+        features: [marker]
+      }),
+      style: new ol.style.Style({
+        image: new ol.style.Icon({
+          src: 'earthquake-3.png',
+          anchor: [0.5, 0.9]
+        })
+      })
     })
   ],
   controls: ol.control.defaults({
@@ -37,6 +51,7 @@ var geolocation = new ol.Geolocation({
 });
 geolocation.once('change:position', function(evt) {
   map.getView().setCenter(geolocation.getPosition());
+  marker.setGeometry(new ol.geom.Point(map.getView().getCenter()));
 });
 
 var form = document.getElementById('searchform');
@@ -55,6 +70,7 @@ form.onsubmit = function(evt) {
         parseFloat(first.lon),
         parseFloat(first.lat)
       ]));
+      marker.setGeometry(new ol.geom.Point(map.getView().getCenter()));
     }
   };
   xhr.send();
